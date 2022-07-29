@@ -1,0 +1,10 @@
+[user]
+	email = warrenlayson@gmail.com
+	name = Warren Layson
+[core]
+	editor = lvim
+
+[includeIf "gitdir:~/work/"]
+  path = ~/work/.gitconfig
+[merge]
+	tool = kdiff3
