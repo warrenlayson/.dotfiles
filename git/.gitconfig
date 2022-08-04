@@ -2,9 +2,9 @@
 	email = warrenlayson@gmail.com
 	name = Warren Layson
 [core]
-	editor = lvim
+	editor = nvim
 
-[includeIf "gitdir:~/work/"]
-  path = ~/work/.gitconfig
+[includeIf "gitdir:~/work/wingaru"]
+  path = .gitconfig-wingaru
 [merge]
 	tool = kdiff3
