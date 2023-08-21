@@ -1,41 +1,64 @@
 "" Source your .vimrc
 "source ~/.vimrc
+let mapleader=" "
+
+""" Plugins  --------------------------------
+set surround
+set multiple-cursors
+set commentary
+set argtextobj
+set easymotion
+set textobj-entire
+set ReplaceWithRegister
+set exchange
+set highlightdeyank
+
+""" Plugin settings -------------------------
+let g:argtextobj_pairs="[:],(:),<:>"
+
+" <C-n> seems to me as a better solution than <M-n>,
+" but we should finally support vim-visual-multi because vim-multiple-cursors is deprecated now
+nmap <C-n> <Plug>NextWholeOccurrence
+xmap <C-n> <Plug>NextWholeOccurrence
+nmap g<C-n> <Plug>NextOccurrence
+xmap g<C-n> <Plug>NextOccurrence
+xmap <C-x> <Plug>SkipOccurrence
+xmap <C-p> <Plug>RemoveOccurrence
 
 
-
-set clipboard=unnamedplus
-set hlsearch
-set ignorecase
-set iskeyword+=-
-" Do incremental searching.
+""" Common settings -------------------------
+set showmode
+set so=5
 set incsearch
-set number
-set relativenumber=false
-set scrolloff=8
-set showmode=false
-set sidescrolloff=8
-set smartcase
-set timeoutlen=1000
+set nu
+set clipboard^=unnamedplus,unnamed
 
+""" Idea specific settings ------------------
+set ideajoin
+set ideastatusicon=gray
 
-" keymaps"
-let mapleader = " "
+""" My Mappings -----------------------------
+map <leader>d <Action>(Debug)
+map <leader>x <Action>(Run)
+map <leader>r <Action>(RenameElement)
+map <leader>c <Action>(Stop)
+map <leader>z <Action>(ToggleDistractionFreeMode)
 
+map <leader>s <Action>(SelectInProjectView)
+map <leader>a <Action>(Annotate)
+map <leader>h <Action>(Vcs.ShowTabbedFileHistory)
+map <S-Space> <Action>(GotoNextError)
 
-" Don't use Ex mode, use Q for formatting.
 map Q gq
-
 inoremap jk <ESC>
 
-"" -- Map IDE actions to IdeaVim -- https://jb.gg/abva4t
-"" Map \r to the Reformat Code action
-"map \r <Action>(ReformatCode)
+" Reformat the current line only
+map <leader>l V<Action>(ReformatCode)
 
-"" Map <leader>d to start debug
-"map <leader>d <Action>(Debug)
+map <leader>b <Action>(ToggleLineBreakpoint)
+map <leader>o <Action>(FileStructurePopup)
 
-"" Map \b to toggle the breakpoint on the current line
-"map \b <Action>(ToggleLineBreakpoint)
-
-
-" Find more examples here: https://jb.gg/share-ideavimrc
+" Toggle case and start typing. E.g. `<leader>iget`: `property` -> `getProperty`
+nmap <leader>i ~hi
+" Remove selection and toggle case. E.g. `v2l<leader>u`: `getProperty` -> `property`
+vmap <leader>u d~h
