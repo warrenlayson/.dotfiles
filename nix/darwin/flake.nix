@@ -5,9 +5,23 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     nix-darwin.url = "github:LnL7/nix-darwin/master";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
+    nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
+    # Optional: Declarative tap management
+    homebrew-core = {
+      url = "github:homebrew/homebrew-core";
+      flake = false;
+    };
+    homebrew-cask = {
+      url = "github:homebrew/homebrew-cask";
+      flake = false;
+    };
+    homebrew-bundle = {
+      url = "github:homebrew/homebrew-bundle";
+      flake = false;
+    };
   };
 
-  outputs = inputs@{ self, nix-darwin, nixpkgs }:
+  outputs = inputs@{ self, nixpkgs, nix-darwin, nix-homebrew, homebrew-core, homebrew-cask, homebrew-bundle, ... }:
   let
     configuration = { pkgs, config, ... }: {
       # List packages installed in system profile. To search by name, run:
@@ -60,7 +74,26 @@
     # Build darwin flake using:
     # $ darwin-rebuild build --flake .#warren-mbp
     darwinConfigurations."mbpro" = nix-darwin.lib.darwinSystem {
-      modules = [ configuration ];
+      modules = [ 
+      	configuration 
+	nix-homebrew.darwinModules.nix-homebrew {
+	  nix-homebrew = {
+	    enable = true;
+
+	    enableRosetta = true;
+
+	    user = "warren";
+
+	    taps = {
+	      "homebrew/homebrew-core" = homebrew-core;
+	      "homebrew/homebrew-cask" = homebrew-cask;
+	      "homebrew/homebrew-bundle" = homebrew-bundle;
+	    };
+
+	    mutableTaps = false;
+	  };
+	}
+      ];
     };
   };
 }
