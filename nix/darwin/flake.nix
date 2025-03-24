@@ -3,8 +3,11 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    nix-darwin.url = "github:LnL7/nix-darwin/master";
-    nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
+    nix-darwin = {
+      url = "github:LnL7/nix-darwin/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    home-manager.url = "github:nix-community/home-manager";
     nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
     # Optional: Declarative tap management
     homebrew-core = {
@@ -21,37 +24,47 @@
     };
   };
 
-  outputs = inputs@{ self, nixpkgs, nix-darwin, nix-homebrew, homebrew-core, homebrew-cask, homebrew-bundle, ... }:
+  outputs = inputs@{ self, nixpkgs, nix-darwin, nix-homebrew, homebrew-core, homebrew-cask, homebrew-bundle, home-manager,... }:
   let
-    configuration = { pkgs, config, ... }: {
+    configuration = { pkgs, ... }: {
       # List packages installed in system profile. To search by name, run:
       # $ nix-env -qaP | grep wget
       environment.systemPackages =
         [ 
-          pkgs.neovim
-          pkgs.tmux
-          pkgs.alacritty
-	  pkgs.nerd-fonts.jetbrains-mono
+          pkgs.vim
         ];
-      system.activationScripts.applications.text = let
-      	env = pkgs.buildEnv {
-		name = "system-applications";
-		paths = config.environment.systemPackages;
-		pathsToLink = "/Applications";
-	};
-      in
-        pkgs.lib.mkForce ''
-	  # Set up applications.
-	  echo "setting up /Applications..." >&2
-	  rm -rf /Applications/Nix\ Apps
-	  mkdir -p /Applications/Nix\ Apps
-	  find ${env}/Applications -maxdepth 1 -type l -exec readlink '{}' + |
-	  while read -r src; do
-	    app_name=$(basename "$src")
-	    echo "copying $src" >&2
-	    ${pkgs.mkalias}/bin/mkalias "$src" "/Applications/Nix Apps/$app_name"
-	  done
-	'';
+
+      fonts.packages = [
+        pkgs.nerd-fonts.jetbrains-mono
+      ];
+
+      system.defaults = {
+        dock.autohide = true;
+        dock.persistent-apps = [
+            "${pkgs.alacritty}/Applications/Alacritty.app"
+            "/System/Applications/Mail.app"
+            "/Applications/Safari.app"
+        ];
+        finder.FXPreferredViewStyle = "clmv";
+        finder.AppleShowAllFiles = true;
+        NSGlobalDomain.AppleInterfaceStyle = "Dark";
+      };
+
+      homebrew = {
+        enable = true;
+	brews = [
+	  "docker-credential-helper"
+    "git-lfs"
+	];
+    casks = [
+        "firefox"
+        "httpie" 
+        "messenger"
+        "malwarebytes"
+        ];
+	onActivation.cleanup = "zap";
+      };
+
 
       # Necessary for using flakes on this system.
       nix.settings.experimental-features = "nix-command flakes";
@@ -72,16 +85,84 @@
   in
   {
     # Build darwin flake using:
-    # $ darwin-rebuild build --flake .#warren-mbp
+    # $ darwin-rebuild build --flake .#mbpro
     darwinConfigurations."mbpro" = nix-darwin.lib.darwinSystem {
       modules = [ 
       	configuration 
-	nix-homebrew.darwinModules.nix-homebrew {
+	home-manager.darwinModules.home-manager
+	{
+	  users.users.warren = {
+	    name = "warren";
+	    home = "/Users/warren";
+	  };
+	  home-manager.users.warren = { pkgs, lib,...}: {
+        nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
+         "raycast"
+        ];
+	    home.packages = [ 
+	      pkgs.stow
+	      pkgs.neovim
+	      pkgs.raycast
+          pkgs.neofetch
+          pkgs.bitwarden-cli
+          pkgs.ollama
+	    ];
+
+	    home.sessionVariables = {
+	      EDITOR = "vim";
+	    };
+        programs = {
+            pyenv = {
+                enable = true;
+                enableZshIntegration = true;
+            };
+            tmux.enable = true;
+            lazygit.enable = true;
+            fd.enable = true;
+            fzf.enable = true;
+            ripgrep.enable = true;
+            alacritty.enable = true;
+            starship.enable = true;
+            direnv = {
+                enable = true;
+                enableZshIntegration = true;
+                nix-direnv.enable = true;
+            };
+            zsh = {
+              enable = true;
+              enableCompletion = true;
+              autosuggestion.enable = true;
+              syntaxHighlighting.enable = true;
+              oh-my-zsh.enable = false;
+              initExtra = ''
+                neofetch
+              '';
+
+              shellAliases = {
+                ll = "ls -l";
+                update = "darwin-rebuild switch --flake ~/.dotfiles/nix/darwin#mbpro";
+                sshconfig = "$EDITOR ~/.ssh/config";
+                flakeconfig = "$EDITOR ~/.dotfiles/nix/darwin/flake.nix";
+                zshsource = "source ~/.zshrc";
+                colimaw = "colima -p wingaru";
+              };
+              history = {
+                extended = true;
+              };
+
+            };
+        };
+
+	    home.stateVersion = "24.11";
+	   
+	  };
+	}
+	nix-homebrew.darwinModules.nix-homebrew
+	{
 	  nix-homebrew = {
 	    enable = true;
 
 	    enableRosetta = true;
-
 	    user = "warren";
 
 	    taps = {
