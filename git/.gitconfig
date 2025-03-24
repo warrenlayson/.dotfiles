@@ -1,10 +1,11 @@
 [user]
-	email = warrenlayson@gmail.com
 	name = Warren Layson
+	email = warrenlayson@gmail.com
+[color]
+	u = auto
 [core]
-	editor = nvim
+	fileMode = false
+	autocrlf = input
+[includeIf "gitdir:~/dev/wingaru/"]
+	path = ~/dev/wingaru/.gitconfig
 
-[includeIf "gitdir:~/work/wingaru"]
-  path = .gitconfig-wingaru
-[merge]
-	tool = kdiff3
