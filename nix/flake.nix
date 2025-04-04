@@ -30,7 +30,7 @@
       # List packages installed in system profile. To search by name, run:
       # $ nix-env -qaP | grep wget
       environment.systemPackages =
-        [ 
+        [
           pkgs.vim
         ];
 
@@ -58,7 +58,7 @@
 	];
     casks = [
         "firefox"
-        "httpie" 
+        "httpie"
         "messenger"
         "malwarebytes"
         ];
@@ -87,8 +87,8 @@
     # Build darwin flake using:
     # $ darwin-rebuild build --flake .#mbpro
     darwinConfigurations."mbpro" = nix-darwin.lib.darwinSystem {
-      modules = [ 
-      	configuration 
+      modules = [
+      	configuration
 	home-manager.darwinModules.home-manager
 	{
 	  users.users.warren = {
@@ -99,7 +99,7 @@
         nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
          "raycast"
         ];
-	    home.packages = [ 
+	    home.packages = [
 	      pkgs.stow
 	      pkgs.neovim
 	      pkgs.raycast
@@ -140,7 +140,7 @@
 
               shellAliases = {
                 ll = "ls -l";
-                update = "darwin-rebuild switch --flake ~/.dotfiles/nix/darwin#mbpro";
+                update = "darwin-rebuild switch --flake ~/.dotfiles/nix#mbpro";
                 sshconfig = "$EDITOR ~/.ssh/config";
                 flakeconfig = "$EDITOR ~/.dotfiles/nix/darwin/flake.nix";
                 zshsource = "source ~/.zshrc";
@@ -154,7 +154,7 @@
         };
 
 	    home.stateVersion = "24.11";
-	   
+
 	  };
 	}
 	nix-homebrew.darwinModules.nix-homebrew
