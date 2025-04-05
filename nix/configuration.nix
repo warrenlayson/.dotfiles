@@ -66,18 +66,18 @@
         Keynote = 409183694;
         Numbers = 409203825;
         Pages = 409201541;
-        Messenger = 480068668;
+        Messenger = 1480068668;
         Xcode = 497799835;
     };
 
     homebrew.casks = [
-        "alacritty"
         "discord"
         "docker"
         "firefox"
         "google-chrome"
         "httpie"
         "malwarebytes"
+        "viber"
         "visual-studio-code"
     ];
 
