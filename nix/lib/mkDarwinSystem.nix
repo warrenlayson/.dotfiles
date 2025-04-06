@@ -64,11 +64,18 @@ inputs.nix-darwin.lib.darwinSystem {
                     nix-homebrew = {
                         enable = true;
 
-                        enableRosetta = true;
+                        enableRosetta = false;
                         user = "${username}";
+
+                        taps = {
+                            "homebrew/core" = inputs.homebrew-core;
+                            "homebrew/cask" = inputs.homebrew-cask;
+                            "homebrew/bundle" = inputs.homebrew-bundle;
+                        };
                         
 
-                        autoMigrate = true;
+                        autoMigrate = false;
+                        mutableTaps = false;
                     };
                 }
             )

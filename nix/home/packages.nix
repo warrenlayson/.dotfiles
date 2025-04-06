@@ -44,6 +44,7 @@ in
         // lib.optionalAttrs pkgs.stdenv.isDarwin  {
             inherit (pkgs)
                 mas
+                raycast
                 cocoapods
                 m-cli
             ;
