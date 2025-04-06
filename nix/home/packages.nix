@@ -43,6 +43,7 @@ in
         } 
         // lib.optionalAttrs pkgs.stdenv.isDarwin  {
             inherit (pkgs)
+                mas
                 cocoapods
                 m-cli
             ;

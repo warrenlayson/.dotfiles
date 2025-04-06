@@ -13,6 +13,7 @@
         Pages = 409201541;
         Messenger = 1480068668;
         Xcode = 497799835;
+        Wireguard = 1451685025;
     };
 
     homebrew.casks = [
@@ -23,6 +24,7 @@
         "malwarebytes"
         "viber"
         "visual-studio-code"
+        "jetbrains-toolbox"
     ];
 
     homebrew.brews = [

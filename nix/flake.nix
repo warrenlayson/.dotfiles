@@ -41,11 +41,13 @@
 
     homeStateVersion = "24.11";
     nixpkgsConfig = {
-        config = {allowUnfree = true;};
+        config = { allowUnfree = true; };
         overlays = attrValues self.overlays
             ++ singleton (
                 final: prev: (optionalAttrs (prev.stdenv.system == "aarch64-darwin") {
-                    # inherit (final.pkgs-x86)
+                    inherit (final.pkgs-x86) 
+                      jetbrains-toolbox
+                      ;
                 })
             );
     };
@@ -70,12 +72,15 @@
             inherit (nixpkgsConfig) config;
           };
         };
-        apple-silicon = final: prev: optionalAttrs (prev.stdenv.system == "arch64-darwin") {
+        apple-silicon =
+          _: prev:
+          optionalAttrs (prev.stdenv.system == "aarch64-darwin") {
+            # Add access to x86 packages system is running Apple Silicon
             pkgs-x86 = import inputs.nixpkgs-unstable {
-                system = "x86_64-darwin";
-                inherit (nixpkgsConfig) config;
+              system = "x86_64-darwin";
+              inherit (nixpkgsConfig) config;
             };
-        };
+          };
     };
 
     # }}}
