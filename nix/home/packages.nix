@@ -6,6 +6,7 @@ let
         cmds: lib.genAttrs cmds (cmd: mkIf (elem pkgs.${cmd} config.home.packages) "op run -- ${cmd}");
 in
 {
+    home.sessionVariables.SSH_AUTH_SOCK = "/Users/${config.home.user-info.username}/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock";
 
     programs.direnv.enable = true;
     programs.direnv.nix-direnv.enable = true;
